@@ -1,4 +1,4 @@
-import Html exposing (Html, button, div, text)
+import Html exposing (Html, button, div, p, text)
 import Html.App as App
 import Html.Events exposing (onClick)
 
@@ -9,33 +9,39 @@ main =
 
 -- MODEL
 
-type alias Model = Int
+type alias Answer = String
+type alias Model = Answer
 
 model : Model
 model =
-  0
-
+  ""
 
 -- UPDATE
 
-type Msg = Increment | Decrement
+type Msg = SubmitAnswer Answer
 
 update : Msg -> Model -> Model
 update msg model =
   case msg of
-    Increment ->
-      model + 1
-
-    Decrement ->
-      model - 1
-
+    SubmitAnswer answer ->
+      answer
 
 -- VIEW
+
+scoreView : Model -> Html Msg
+scoreView model =
+  p [] [ text <| "Last answer: " ++ model ]
 
 view : Model -> Html Msg
 view model =
   div []
-    [ button [ onClick Decrement ] [ text "-" ]
-    , div [] [ text (toString model) ]
-    , button [ onClick Increment ] [ text "+" ]
+    [
+      scoreView model,
+      p []
+        [ text "Where is Aleppo?" ],
+      div []
+        [ button [ onClick <| SubmitAnswer "Iraq" ] [ text "Iraq" ]
+        , button [ onClick <| SubmitAnswer "Syria" ] [ text "Syria" ]
+        , button [ onClick <| SubmitAnswer "Afghanistan" ] [ text "Afghanistan" ]
+        ]
     ]
