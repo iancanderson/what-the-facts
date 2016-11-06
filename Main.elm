@@ -30,7 +30,7 @@ type alias Question =
 
 
 type alias Model =
-    { lastAnswer : Answer
+    { lastAnswer : Maybe Option
     , questions : List Question
     , currentQuestion : Question
     }
@@ -52,7 +52,7 @@ allQuestions =
 
 model : Model
 model =
-    { lastAnswer = ""
+    { lastAnswer = Nothing
     , questions = allQuestions
     , currentQuestion = firstQuestion
     }
@@ -63,29 +63,45 @@ model =
 
 
 type Msg
-    = SubmitAnswer Answer
+    = SubmitChoice Option
 
 
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        SubmitAnswer answer ->
-            { model | lastAnswer = answer }
+        SubmitChoice choice ->
+            { model | lastAnswer = Just choice }
 
 
 
 -- VIEW
 
 
+displayCorrectness : Maybe Option -> String
+displayCorrectness moption =
+    case moption of
+        Nothing ->
+            ""
+
+        Just option ->
+            if option.correct then
+                option.body ++ ": RIGHT"
+            else
+                option.body ++ ": WRONG"
+
+
 scoreView : Model -> Html Msg
 scoreView model =
     p []
-        [ text <| "Last answer: " ++ model.lastAnswer ]
+        [ text <|
+            "Last answer: "
+                ++ displayCorrectness model.lastAnswer
+        ]
 
 
 optionView : Option -> Html Msg
 optionView option =
-    button [ onClick <| SubmitAnswer option.body ] [ text option.body ]
+    button [ onClick <| SubmitChoice option ] [ text option.body ]
 
 
 questionView : Model -> Html Msg
